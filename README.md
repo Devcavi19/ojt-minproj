@@ -11,6 +11,12 @@
 
 <h4>Transform unstructured customer feedback into actionable business intelligence using AI-powered analysis.</h4>
 
+<p align="center">
+  <a href="https://devcavi19.pythonanywhere.com">
+    <img src="https://img.shields.io/badge/Project%20Link-Live%20Demo-blueviolet?style=for-the-badge" alt="Project Link"/>
+  </a>
+</p>
+
 </div>
 
 -----------------------------------------
@@ -20,6 +26,8 @@
 * Gainsight AI is a web application that helps businesses process and analyze customer feedback at scale. Modern businesses collect massive amounts of feedback from support tickets, social media, reviews, and surveys, but struggle to extract meaningful insights manually.
 
 * This tool leverages **Google Gemini AI** to automatically categorize feedback into critical issues requiring immediate attention, feature requests and product gaps, overall sentiment analysis, and quick wins for easy improvements.
+
+* Built with the assistance of **Claude Opus 4.5**, an advanced AI coding assistant that helped accelerate development and ensure code quality.
 
 ------------------------------------------
 
@@ -62,6 +70,9 @@
 
 #### AI Model
 * **Google Gemini** (`gemini-2.5-flash` by default)
+
+#### Development Tools
+* **Claude Opus 4.5** - AI coding assistant for development support
 
 ------------------------------------------
 
