@@ -1,0 +1,5 @@
+# Python 3.10.9
+
+flask
+google-generativeai
+python-dotenv
