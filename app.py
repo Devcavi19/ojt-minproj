@@ -11,13 +11,12 @@ load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
-if not GOOGLE_API_KEY:
-    raise ValueError("GOOGLE_API_KEY not found in environment variables")
-
-genai.configure(api_key=GOOGLE_API_KEY)
+# Configure Gemini if API key is available (allows app to load for WSGI)
+if GOOGLE_API_KEY:
+    genai.configure(api_key=GOOGLE_API_KEY)
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 
 
 def analyze_feedback_with_gemini(feedback_text: str) -> dict:
@@ -70,6 +69,12 @@ Rules:
 """
 
     try:
+        if not GOOGLE_API_KEY:
+            return {
+                "success": False,
+                "error": "GOOGLE_API_KEY not configured. Please set the environment variable."
+            }
+        
         model = genai.GenerativeModel(GEMINI_MODEL)
         response = model.generate_content(prompt)
         
