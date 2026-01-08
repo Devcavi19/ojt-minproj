@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}Gainsight AI - Analysis Results{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Back Button & Header -->
+    <div class="flex items-center justify-between mb-8">
+        <a href="{{ url_for('index') }}" class="flex items-center text-primary hover:text-secondary transition-colors">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Analyze More Feedback
+        </a>
+        <h1 class="text-2xl font-bold text-gray-900">Analysis Results</h1>
+    </div>
+
+    {% if error %}
+    <!-- Error Card -->
+    <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 mb-8">
+        <div class="flex items-center">
+            <svg class="w-8 h-8 text-red-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+                <h3 class="text-lg font-semibold text-red-800">Analysis Failed</h3>
+                <p class="text-red-600">{{ error }}</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+
+    <!-- Sentiment Pulse Card -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 card-hover">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-xl font-bold text-gray-900 mb-2">📊 Sentiment Pulse</h2>
+                <p class="text-gray-600">{{ data.sentiment.summary }}</p>
+            </div>
+            <div class="text-center">
+                {% set score = data.sentiment.score %}
+                {% if score >= 30 %}
+                    {% set color = "green" %}
+                    {% set emoji = "😊" %}
+                {% elif score >= -30 %}
+                    {% set color = "yellow" %}
+                    {% set emoji = "😐" %}
+                {% else %}
+                    {% set color = "red" %}
+                    {% set emoji = "😟" %}
+                {% endif %}
+                <div class="text-5xl mb-2">{{ emoji }}</div>
+                <div class="text-3xl font-bold text-{{ color }}-600">{{ score }}</div>
+                <div class="text-sm text-gray-500 uppercase tracking-wide">{{ data.sentiment.label }}</div>
+            </div>
+        </div>
+        <!-- Score Bar -->
+        <div class="mt-4">
+            <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500" style="width: 100%"></div>
+            </div>
+            <div class="relative h-4">
+                <div class="absolute transform -translate-x-1/2" style="left: {{ ((score + 100) / 200) * 100 }}%">
+                    <div class="w-0 h-0 border-l-4 border-r-4 border-b-8 border-l-transparent border-r-transparent border-b-gray-800"></div>
+                </div>
+            </div>
+            <div class="flex justify-between text-xs text-gray-400">
+                <span>-100</span>
+                <span>0</span>
+                <span>+100</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Themes -->
+    {% if data.key_themes %}
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 card-hover">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">🏷️ Key Themes</h2>
+        <div class="flex flex-wrap gap-2">
+            {% for theme in data.key_themes %}
+            <span class="px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium">
+                {{ theme }}
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Cards Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        
+        <!-- P0 Issues Card -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+            <div class="bg-red-500 px-6 py-4">
+                <h2 class="text-xl font-bold text-white flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    P0 Issues (Critical)
+                </h2>
+            </div>
+            <div class="p-6">
+                {% if data.p0_issues %}
+                    <ul class="space-y-4">
+                        {% for issue in data.p0_issues %}
+                        <li class="border-l-4 border-red-500 pl-4 py-2">
+                            <h3 class="font-semibold text-gray-900">{{ issue.title }}</h3>
+                            <p class="text-sm text-gray-600 mt-1">{{ issue.description }}</p>
+                            <span class="inline-block mt-2 px-2 py-1 bg-red-100 text-red-800 text-xs rounded uppercase">
+                                {{ issue.urgency }}
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="text-center py-8 text-gray-400">
+                        <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <p>No critical issues detected!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Product Gaps Card -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+            <div class="bg-yellow-500 px-6 py-4">
+                <h2 class="text-xl font-bold text-white flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                    Product Gaps
+                </h2>
+            </div>
+            <div class="p-6">
+                {% if data.product_gaps %}
+                    <ul class="space-y-4">
+                        {% for gap in data.product_gaps %}
+                        <li class="border-l-4 border-yellow-500 pl-4 py-2">
+                            <h3 class="font-semibold text-gray-900">{{ gap.title }}</h3>
+                            <p class="text-sm text-gray-600 mt-1">{{ gap.description }}</p>
+                            <span class="inline-block mt-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded uppercase">
+                                {{ gap.frequency }} demand
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="text-center py-8 text-gray-400">
+                        <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <p>No product gaps identified</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Wins Card -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8 card-hover">
+        <div class="bg-green-500 px-6 py-4">
+            <h2 class="text-xl font-bold text-white flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                Quick Wins
+            </h2>
+        </div>
+        <div class="p-6">
+            {% if data.quick_wins %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for win in data.quick_wins %}
+                    <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                        <h3 class="font-semibold text-gray-900 mb-2">{{ win.title }}</h3>
+                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded uppercase">
+                            {{ win.impact }} impact
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8 text-gray-400">
+                    <p>No quick wins identified</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% endif %}
+
+    <!-- Original Feedback Collapsible -->
+    <details class="bg-gray-100 rounded-lg overflow-hidden">
+        <summary class="px-6 py-4 cursor-pointer hover:bg-gray-200 transition-colors font-medium text-gray-700">
+            📄 View Original Feedback
+        </summary>
+        <div class="px-6 py-4 bg-white border-t">
+            <pre class="whitespace-pre-wrap text-sm text-gray-600 font-mono">{{ original_feedback }}</pre>
+        </div>
+    </details>
+</div>
+{% endblock %}
